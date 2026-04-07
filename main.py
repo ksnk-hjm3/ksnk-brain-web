@@ -33,127 +33,163 @@ HTML_LAYOUT = f"""
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K-Brain | Evidence Analyzer</title>
+    <title>K-Brain | Evidence Command Center</title>
     {ADSENSE_HEAD_CODE}
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&family=Noto+Sans+JP:wght@300;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono&display=swap');
         
         :root {{
-            --bg: #fdfdfd;
-            --main: #0f172a;
-            --accent: #3b82f6;
-            --glass: rgba(255, 255, 255, 0.8);
-            --border: #e2e8f0;
+            --bg: #030712;
+            --panel: rgba(17, 24, 39, 0.7);
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
         }}
 
         body {{ 
-            font-family: 'Inter', 'Noto Sans JP', sans-serif; 
-            margin: 0; background-color: var(--bg); color: var(--main);
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 32px 32px; /* 緻密さを演出するグリッド */
+            font-family: 'Inter', sans-serif; 
+            margin: 0; background-color: var(--bg); color: var(--text-main);
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
             min-height: 100vh;
+            overflow-x: hidden;
         }}
 
-        .nav-bar {{
-            padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+        /* 上部バー：司令塔の雰囲気 */
+        .top-nav {{
+            border-bottom: 1px solid var(--border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100;
         }}
 
-        .logo {{ font-size: 1.5em; font-weight: 800; letter-spacing: -0.02em; }}
-        .logo span {{ font-weight: 300; color: var(--accent); }}
-
-        .container {{ max-width: 900px; margin: 0 auto; padding: 40px 20px; }}
-
-        .hero {{ text-align: center; padding: 80px 0 40px; }}
-        
-        .badge {{
-            display: inline-block; padding: 4px 12px; background: #eff6ff; color: var(--accent);
-            border-radius: 20px; font-size: 0.75em; font-weight: 700; margin-bottom: 15px;
-            border: 1px solid #dbeafe; letter-spacing: 0.1em;
+        .system-status {{
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7em; color: var(--accent);
         }}
 
-        h1 {{ font-size: 3.5em; font-weight: 800; margin: 0; letter-spacing: -0.04em; line-height: 1; }}
-        .tagline {{ font-size: 1.2em; font-weight: 300; color: #64748b; margin: 15px 0 40px; letter-spacing: 0.2em; }}
-
-        .search-wrapper {{
-            background: var(--glass); backdrop-filter: blur(10px);
-            border: 1px solid var(--border); border-radius: 24px;
-            padding: 8px; display: flex; box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+        .status-dot {{
+            width: 8px; height: 8px; background: var(--accent);
+            border-radius: 50%; box-shadow: 0 0 10px var(--accent);
+            animation: pulse 2s infinite;
         }}
-        .search-wrapper:focus-within {{ border-color: var(--accent); box-shadow: 0 20px 40px rgba(59,130,246,0.1); }}
+
+        @keyframes pulse {{
+            0% {{ opacity: 1; }} 50% {{ opacity: 0.3; }} 100% {{ opacity: 1; }}
+        }}
+
+        .container {{ max-width: 1000px; margin: 0 auto; padding: 60px 20px; }}
+
+        .hero {{ text-align: center; margin-bottom: 80px; }}
+
+        h1 {{ 
+            font-size: 4.5em; font-weight: 800; letter-spacing: -0.06em; margin: 0;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }}
+
+        .tagline {{ 
+            font-size: 1.1em; color: var(--accent); font-weight: 400; 
+            letter-spacing: 0.4em; margin-top: 5px; text-transform: uppercase;
+        }}
+
+        /* 検索セクション：コンソール風 */
+        .search-console {{
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 12px;
+            display: flex;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            margin: 40px 0;
+        }}
 
         .search-input {{
             flex: 1; border: none; background: transparent; padding: 20px 30px;
-            font-size: 1.2em; outline: none; color: var(--main);
+            font-size: 1.2em; color: white; outline: none;
         }}
 
         .analyze-btn {{
-            background: var(--main); color: white; border: none; border-radius: 18px;
-            padding: 0 40px; font-weight: 700; cursor: pointer; transition: 0.2s;
+            background: var(--accent); color: #000; border: none; border-radius: 24px;
+            padding: 0 45px; font-weight: 800; cursor: pointer; transition: 0.3s;
+            font-family: 'Inter', sans-serif; letter-spacing: 0.05em;
         }}
-        .analyze-btn:hover {{ background: var(--accent); }}
+        .analyze-btn:hover {{ transform: scale(1.02); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }}
 
-        .stats-grid {{
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 60px;
+        .metrics {{
+            display: flex; justify-content: center; gap: 60px; margin-top: 30px;
+            font-family: 'JetBrains Mono', monospace;
         }}
-        .stat-card {{
-            background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border);
-            text-align: center;
-        }}
-        .stat-val {{ display: block; font-size: 1.4em; font-weight: 800; color: var(--main); }}
-        .stat-label {{ font-size: 0.7em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }}
+        .metric-item {{ text-align: left; }}
+        .metric-label {{ display: block; font-size: 0.65em; color: var(--text-sub); text-transform: uppercase; }}
+        .metric-value {{ font-size: 1.2em; font-weight: 600; color: #fff; }}
 
+        /* 結果カード */
         .article-card {{
-            background: white; padding: 40px; border-radius: 24px; margin-bottom: 30px;
-            border: 1px solid var(--border); transition: 0.3s;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 40px; border-radius: 24px; margin-bottom: 30px;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }}
-        .article-card:hover {{ transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }}
-        .article-title {{ font-size: 1.4em; font-weight: 700; margin-bottom: 20px; display: block; line-height: 1.4; }}
-        .article-text {{ font-size: 1em; color: #475569; line-height: 1.8; }}
+        .article-card:hover {{
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }}
 
-        footer {{ text-align: center; padding: 100px 0 60px; border-top: 1px solid var(--border); margin-top: 100px; }}
-        .footer-links a {{ color: #94a3b8; text-decoration: none; margin: 0 15px; font-size: 0.8em; font-weight: 600; }}
-        .footer-links a:hover {{ color: var(--accent); }}
+        .article-title {{ font-size: 1.5em; font-weight: 700; color: #fff; margin-bottom: 15px; display: block; }}
+        .article-text {{ font-size: 1.05em; color: var(--text-sub); line-height: 1.9; }}
+
+        footer {{ text-align: center; padding: 100px 0; opacity: 0.5; font-size: 0.8em; }}
+        footer a {{ color: #fff; text-decoration: none; margin: 0 15px; }}
 
         @media (max-width: 600px) {{
-            h1 {{ font-size: 2.5em; }}
-            .stats-grid {{ grid-template-columns: 1fr; }}
-            .search-wrapper {{ flex-direction: column; border-radius: 30px; }}
-            .analyze-btn {{ padding: 15px; width: 100%; border-radius: 20px; margin-top: 10px; }}
+            h1 {{ font-size: 3em; }}
+            .search-console {{ flex-direction: column; border-radius: 24px; }}
+            .analyze-btn {{ padding: 18px; margin-top: 10px; }}
+            .metrics {{ gap: 20px; flex-direction: column; align-items: center; }}
         }}
     </style>
 </head>
 <body>
-    <div class="nav-bar">
-        <div class="logo">K-<span>Brain</span></div>
-        <div class="footer-links" style="margin:0;"><a href="{INSTA_URL}" target="_blank">INSTAGRAM</a></div>
+    <div class="top-nav">
+        <div style="font-weight:800; font-size:1.2em; letter-spacing:-0.05em;">K-Brain</div>
+        <div class="system-status">
+            <div class="status-dot"></div>
+            <span>ANALYZER ONLINE / DATA_SYNC: OK</span>
+        </div>
     </div>
 
     <div class="container">
         <div class="hero">
-            <div class="badge">SYSTEM ONLINE</div>
-            <h1>K-Brain</h1>
             <p class="tagline">思考停止を解除する</p>
+            <h1>K-Brain</h1>
             
-            <form action="/" method="GET" class="search-wrapper">
-                <input type="text" name="q" class="search-input" placeholder="論文・疾患・手技を解析..." value="{{{{ query }}}}">
-                <button type="submit" class="analyze-btn">ANALYZE</button>
-            </form>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-val">{{{{ total_count }}}}</span>
-                    <span class="stat-label">Indexed Records</span>
+            <div class="metrics">
+                <div class="metric-item">
+                    <span class="metric-label">Total Evidence</span>
+                    <span class="metric-value">{{{{ total_count }}}}</span>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-val">Global</span>
-                    <span class="stat-label">Evidence Source</span>
+                <div class="metric-item">
+                    <span class="metric-label">Engine Version</span>
+                    <span class="metric-value">v19.0_PRO</span>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-val">Real-time</span>
-                    <span class="stat-label">Analysis Logic</span>
+                <div class="metric-item">
+                    <span class="metric-label">Update Frequency</span>
+                    <span class="metric-value">24H_AUTO</span>
                 </div>
             </div>
+
+            <form action="/" method="GET" class="search-console">
+                <input type="text" name="q" class="search-input" placeholder="解析する疾患名、手技、論文キーワードを入力..." value="{{{{ query }}}}">
+                <button type="submit" class="analyze-btn">ANALYZE</button>
+            </form>
         </div>
 
         <div class="content">
@@ -165,20 +201,16 @@ HTML_LAYOUT = f"""
                 </div>
                 {{% endfor %}}
             {{% elif query %}}
-                <div style="text-align:center; padding:100px; color:#94a3b8;">
-                    <p>一致するエビデンスが見つかりませんでした。</p>
+                <div style="text-align:center; padding:100px; font-family:'JetBrains Mono'; color:var(--text-sub);">
+                    > NO_DATA_FOUND_IN_NEXUS
                 </div>
             {{% endif %}}
         </div>
     </div>
 
     <footer>
-        <div class="footer-links">
-            <a href="/about">ABOUT</a>
-            <a href="/privacy">PRIVACY</a>
-            <a href="{INSTA_URL}" target="_blank">CONTACT</a>
-        </div>
-        <p style="color:#cbd5e1; font-size:0.7em; margin-top:30px;">&copy; 2026 {ADMIN_NAME}. All rights reserved.</p>
+        <a href="/about">ABOUT SYSTEM</a> | <a href="/privacy">PRIVACY</a> | <a href="{INSTA_URL}" target="_blank">INSTAGRAM</a>
+        <p style="margin-top:20px;">&copy; 2026 {ADMIN_NAME}. High-Fidelity Evidence Analysis Engine.</p>
     </footer>
 </body>
 </html>
