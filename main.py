@@ -33,206 +33,152 @@ HTML_LAYOUT = f"""
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K-Brain | 思考停止を解除する</title>
+    <title>K-Brain | Evidence Analyzer</title>
     {ADSENSE_HEAD_CODE}
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&family=Noto+Sans+JP:wght@300;500;700&display=swap');
         
         :root {{
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --primary-text: #1e293b;
-            --secondary-text: #64748b;
-            --accent-color: #0ea5e9;
-            --border-color: #e2e8f0;
+            --bg: #fdfdfd;
+            --main: #0f172a;
+            --accent: #3b82f6;
+            --glass: rgba(255, 255, 255, 0.8);
+            --border: #e2e8f0;
         }}
 
         body {{ 
-            font-family: 'Inter', -apple-system, sans-serif; 
-            max-width: 850px; 
-            margin: 0 auto; 
-            padding: 40px 20px; 
-            background: var(--bg-color); 
-            color: var(--primary-text); 
-            line-height: 1.6;
+            font-family: 'Inter', 'Noto Sans JP', sans-serif; 
+            margin: 0; background-color: var(--bg); color: var(--main);
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 32px 32px; /* 緻密さを演出するグリッド */
+            min-height: 100vh;
         }}
 
-        .header {{ 
-            text-align: center; 
-            padding: 60px 20px; 
-            margin-bottom: 40px; 
+        .nav-bar {{
+            padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
         }}
 
-        h1 {{ 
-            font-size: 3.2em; 
-            font-weight: 700; 
-            letter-spacing: -0.05em; 
-            margin: 0; 
-            color: var(--primary-text);
+        .logo {{ font-size: 1.5em; font-weight: 800; letter-spacing: -0.02em; }}
+        .logo span {{ font-weight: 300; color: var(--accent); }}
+
+        .container {{ max-width: 900px; margin: 0 auto; padding: 40px 20px; }}
+
+        .hero {{ text-align: center; padding: 80px 0 40px; }}
+        
+        .badge {{
+            display: inline-block; padding: 4px 12px; background: #eff6ff; color: var(--accent);
+            border-radius: 20px; font-size: 0.75em; font-weight: 700; margin-bottom: 15px;
+            border: 1px solid #dbeafe; letter-spacing: 0.1em;
         }}
 
-        .subtitle {{ 
-            font-size: 1.1em; 
-            color: var(--accent-color); 
-            font-weight: 400; 
-            letter-spacing: 0.3em; 
-            margin-top: 10px;
-            text-transform: uppercase;
+        h1 {{ font-size: 3.5em; font-weight: 800; margin: 0; letter-spacing: -0.04em; line-height: 1; }}
+        .tagline {{ font-size: 1.2em; font-weight: 300; color: #64748b; margin: 15px 0 40px; letter-spacing: 0.2em; }}
+
+        .search-wrapper {{
+            background: var(--glass); backdrop-filter: blur(10px);
+            border: 1px solid var(--border); border-radius: 24px;
+            padding: 8px; display: flex; box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }}
+        .search-wrapper:focus-within {{ border-color: var(--accent); box-shadow: 0 20px 40px rgba(59,130,246,0.1); }}
+
+        .search-input {{
+            flex: 1; border: none; background: transparent; padding: 20px 30px;
+            font-size: 1.2em; outline: none; color: var(--main);
         }}
 
-        .count-info {{ 
-            font-size: 0.85em; 
-            color: var(--secondary-text); 
-            margin-top: 25px;
+        .analyze-btn {{
+            background: var(--main); color: white; border: none; border-radius: 18px;
+            padding: 0 40px; font-weight: 700; cursor: pointer; transition: 0.2s;
         }}
+        .analyze-btn:hover {{ background: var(--accent); }}
 
-        .search-container {{
-            background: var(--card-bg);
-            padding: 10px;
-            border-radius: 50px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--border-color);
-            margin-bottom: 50px;
+        .stats-grid {{
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 60px;
         }}
-
-        .search-input {{ 
-            flex-grow: 1;
-            border: none;
-            padding: 15px 25px;
-            font-size: 1.1em;
-            outline: none;
-            background: transparent;
-            color: var(--primary-text);
+        .stat-card {{
+            background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border);
+            text-align: center;
         }}
+        .stat-val {{ display: block; font-size: 1.4em; font-weight: 800; color: var(--main); }}
+        .stat-label {{ font-size: 0.7em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }}
 
-        .btn {{ 
-            background: var(--primary-text);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .article-card {{
+            background: white; padding: 40px; border-radius: 24px; margin-bottom: 30px;
+            border: 1px solid var(--border); transition: 0.3s;
         }}
+        .article-card:hover {{ transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }}
+        .article-title {{ font-size: 1.4em; font-weight: 700; margin-bottom: 20px; display: block; line-height: 1.4; }}
+        .article-text {{ font-size: 1em; color: #475569; line-height: 1.8; }}
 
-        .btn:hover {{
-            background: var(--accent-color);
-            transform: translateY(-1px);
-        }}
-
-        .article-card {{ 
-            background: var(--card-bg); 
-            padding: 35px; 
-            border-radius: 16px; 
-            margin-bottom: 24px; 
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s ease;
-        }}
-
-        .article-card:hover {{
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-        }}
-
-        .article-title {{
-            font-size: 1.3em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: block;
-            color: var(--primary-text);
-        }}
-
-        .article-text {{
-            font-size: 0.95em;
-            color: var(--secondary-text);
-        }}
-
-        footer {{ 
-            text-align: center; 
-            margin-top: 100px; 
-            padding: 40px; 
-            font-size: 0.8em; 
-            color: var(--secondary-text); 
-        }}
-
-        footer a {{ color: var(--secondary-text); text-decoration: none; margin: 0 15px; transition: color 0.2s; }}
-        footer a:hover {{ color: var(--accent-color); }}
+        footer {{ text-align: center; padding: 100px 0 60px; border-top: 1px solid var(--border); margin-top: 100px; }}
+        .footer-links a {{ color: #94a3b8; text-decoration: none; margin: 0 15px; font-size: 0.8em; font-weight: 600; }}
+        .footer-links a:hover {{ color: var(--accent); }}
 
         @media (max-width: 600px) {{
             h1 {{ font-size: 2.5em; }}
-            .search-container {{ border-radius: 20px; flex-direction: column; padding: 10px; }}
-            .search-input {{ width: 100%; text-align: center; }}
-            .btn {{ width: 100%; }}
+            .stats-grid {{ grid-template-columns: 1fr; }}
+            .search-wrapper {{ flex-direction: column; border-radius: 30px; }}
+            .analyze-btn {{ padding: 15px; width: 100%; border-radius: 20px; margin-top: 10px; }}
         }}
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>K-Brain</h1>
-        <p class="subtitle">思考停止を解除する</p>
-        <p class="count-info">Database: <span style="font-weight:600; color:var(--primary-text); border-bottom: 2px solid var(--accent-color);">{{{{ total_count }}}}</span> Evidence Records Indexed</p>
+    <div class="nav-bar">
+        <div class="logo">K-<span>Brain</span></div>
+        <div class="footer-links" style="margin:0;"><a href="{INSTA_URL}" target="_blank">INSTAGRAM</a></div>
     </div>
 
-    {{% block content %}}
-    <div class="search-box">
-        <form action="/" method="GET" class="search-container">
-            <input type="text" name="q" class="search-input" placeholder="論文タイトル、疾患名、手技で解析..." value="{{{{ query }}}}">
-            <button type="submit" class="btn">ANALYZE</button>
-        </form>
-    </div>
+    <div class="container">
+        <div class="hero">
+            <div class="badge">SYSTEM ONLINE</div>
+            <h1>K-Brain</h1>
+            <p class="tagline">思考停止を解除する</p>
+            
+            <form action="/" method="GET" class="search-wrapper">
+                <input type="text" name="q" class="search-input" placeholder="論文・疾患・手技を解析..." value="{{{{ query }}}}">
+                <button type="submit" class="analyze-btn">ANALYZE</button>
+            </form>
 
-    <div class="content">
-        {{% if data %}}
-            {{% for row in data %}}
-            <div class="article-card">
-                <span class="article-title">{{{{ row[0] }}}}</span>
-                <div class="article-text">{{{{ row[1] }}}}</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-val">{{{{ total_count }}}}</span>
+                    <span class="stat-label">Indexed Records</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-val">Global</span>
+                    <span class="stat-label">Evidence Source</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-val">Real-time</span>
+                    <span class="stat-label">Analysis Logic</span>
+                </div>
             </div>
-            {{% endfor %}}
-        {{% elif query %}}
-            <p style="text-align:center; color: var(--secondary-text);">NO EVIDENCE FOUND FOR "{{{{ query }}}}"</p>
-        {{% endif %}}
+        </div>
+
+        <div class="content">
+            {{% if data %}}
+                {{% for row in data %}}
+                <div class="article-card">
+                    <span class="article-title">{{{{ row[0] }}}}</span>
+                    <div class="article-text">{{{{ row[1] }}}}</div>
+                </div>
+                {{% endfor %}}
+            {{% elif query %}}
+                <div style="text-align:center; padding:100px; color:#94a3b8;">
+                    <p>一致するエビデンスが見つかりませんでした。</p>
+                </div>
+            {{% endif %}}
+        </div>
     </div>
-    {{% endblock %}}
 
     <footer>
-        <p>&copy; 2026 {ADMIN_NAME}. Powered by AI Evidence Analysis.</p>
-        <a href="/about">ABOUT</a> 
-        <a href="/privacy">PRIVACY</a> 
-        <a href="{INSTA_URL}" target="_blank">INSTAGRAM</a>
+        <div class="footer-links">
+            <a href="/about">ABOUT</a>
+            <a href="/privacy">PRIVACY</a>
+            <a href="{INSTA_URL}" target="_blank">CONTACT</a>
+        </div>
+        <p style="color:#cbd5e1; font-size:0.7em; margin-top:30px;">&copy; 2026 {ADMIN_NAME}. All rights reserved.</p>
     </footer>
 </body>
 </html>
-"""
-
-@app.route("/")
-def index():
-    query = request.args.get('q', '')
-    total_count = get_db_count()
-    data = []
-    if query:
-        try:
-            conn = psycopg2.connect(DATABASE_URL)
-            cur = conn.cursor()
-            search_sql = "SELECT title, full_text FROM vault WHERE title ILIKE %s OR full_text ILIKE %s LIMIT 20"
-            cur.execute(search_sql, (f"%{query}%", f"%{query}%"))
-            data = cur.fetchall()
-            conn.close()
-        except: pass
-    return render_template_string(HTML_LAYOUT, data=data, query=query, total_count=total_count)
-
-@app.route("/about")
-def about():
-    total_count = get_db_count()
-    return render_template_string(HTML_LAYOUT.replace('{% block content %}', '<div class="article-card"><h2>ABOUT PROJECT</h2><p>理学療法士の現場に「根拠」と「閃き」を。16万件超のエビデンスが、あなたの臨床の思考停止を解除します。</p></div>').replace('{% endblock %}', ''), total_count=total_count)
-
-@app.route("/privacy")
-def privacy():
-    total_count = get_db_count()
-    return render_template_string(HTML_LAYOUT.replace('{% block content %}', f'<div class="article-card"><h2>PRIVACY POLICY</h2><p>当サイトではGoogleアドセンスを利用し、広告を配信しています。</p><p>運営者: {ADMIN_NAME}</p></div>').replace('{% endblock %}', ''), total_count=total_count)
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
