@@ -10,7 +10,7 @@ DATABASE_URL = "postgresql://hajime:0jsveDiLjj4VMsiqqKTYJaJFHmCC1PJr@dpg-d79ou6q
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
-# --- [デザイン：Readdy AI / Premium Grey Edition] ---
+# --- [デザイン：Ultra Modern SaaS Design] ---
 INDEX_HTML = """
 <!DOCTYPE html>
 <html lang="ja">
@@ -18,99 +18,136 @@ INDEX_HTML = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6734545930167078" crossorigin="anonymous"></script>
-    <title>K-Brain | 臨床知能アーカイブ</title>
+    <title>K-Brain | 統合知能アーカイブ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;500;700&display=swap');
         
         body { 
             font-family: 'Inter', 'Noto Sans JP', sans-serif; 
-            background-color: #f8fafc; /* より明るく清潔感のあるグレー */
-            color: #0f172a;
+            background-color: #fcfcfd; 
+            color: #101828;
+            overflow-x: hidden;
         }
 
-        /* クスノキの透かし（巨大なアイコンを背景に配置） */
-        .bg-watermark {
+        /* 💡 Readdy風の「光の溜まり」を作る背景演出 */
+        .bg-glow {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            max-width: 800px;
-            opacity: 0.02;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background: 
+                radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(2, 132, 199, 0.05) 0%, transparent 40%);
+            z-index: -2;
+        }
+
+        /* 🌳 クスノキの透かし：巨大にして端に配置し、デザインの一部に */
+        .watermark-svg {
+            position: fixed;
+            bottom: -10%;
+            right: -5%;
+            width: 60%;
+            max-width: 700px;
+            opacity: 0.03;
             z-index: -1;
-            pointer-events: none;
+            transform: rotate(-10deg);
         }
 
-        /* Readdy風：浮遊感のあるガラスカード */
-        .premium-card {
+        /* ✨ 検索バー：超広角・多層シャドウ・ガラスモフィズム */
+        .search-card {
             background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03), 0 0 0 1px rgba(0, 0, 0, 0.01);
-            border-radius: 2.5rem;
+            backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                0 20px 40px -10px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 検索バーのカスタムシャドウ */
-        .search-container {
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+        .search-card:focus-within {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(14, 165, 233, 0.3);
         }
 
-        .hero-text {
-            letter-spacing: -0.05em;
-            line-height: 1.1;
+        .hero-title {
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+            background: linear-gradient(180deg, #101828 0%, #475467 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-premium {
+            background: #0ea5e9;
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            background: #0284c7;
+            transform: scale(1.02);
+            box-shadow: 0 12px 25px rgba(14, 165, 233, 0.4);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center">
+<body class="min-h-screen flex flex-col">
 
-    <svg class="bg-watermark" viewBox="0 0 100 100" fill="currentColor">
-        <path d="M50 10 C35 10 25 25 25 45 C25 65 40 70 45 85 L55 85 C60 70 75 65 75 45 C75 25 65 10 50 10 Z" fill="none" stroke="currentColor" stroke-width="0.5"/>
+    <div class="bg-glow"></div>
+    
+    <svg class="watermark-svg" viewBox="0 0 100 100" fill="currentColor">
+        <path d="M50 10 C35 10 25 25 25 45 C25 65 40 70 45 85 L55 85 C60 70 75 65 75 45 C75 25 65 10 50 10 Z" fill="none" stroke="currentColor" stroke-width="0.3"/>
     </svg>
 
-    <header class="w-full max-w-6xl px-6 py-8 flex justify-between items-center z-50">
-        <div class="text-2xl font-extrabold italic tracking-tighter text-slate-900">K-Brain</div>
-        <div class="flex items-center space-x-6">
-            <a href="https://www.instagram.com/ksnk.hjm3/" target="_blank" class="text-xs font-bold text-slate-400 hover:text-sky-500 uppercase tracking-widest transition">Instagram</a>
-            <a href="https://ksnk-brain.jp" class="px-6 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-full hover:bg-sky-600 transition shadow-lg shadow-slate-200">検索エンジン起動</a>
+    <nav class="w-full max-w-7xl mx-auto px-8 py-10 flex justify-between items-center z-50">
+        <div class="text-3xl font-extrabold italic tracking-tighter text-slate-900">K-Brain</div>
+        <div class="flex items-center space-x-8">
+            <a href="https://www.instagram.com/ksnk.hjm3/" target="_blank" class="text-[11px] font-bold text-slate-400 hover:text-sky-500 uppercase tracking-[0.2em] transition">Instagram</a>
+            <a href="https://ksnk-brain.jp" class="px-7 py-3 bg-slate-900 text-white text-[11px] font-bold rounded-full hover:bg-sky-600 transition tracking-widest uppercase">Launch Engine</a>
         </div>
-    </header>
+    </nav>
 
-    <main class="w-full max-w-4xl px-6 py-20 text-center flex flex-col items-center">
-        <div class="inline-block px-4 py-1 mb-8 bg-sky-50 text-sky-600 rounded-full text-[10px] font-bold uppercase tracking-widest border border-sky-100">
-            Nexus Project v22.3
+    <main class="flex-grow flex flex-col items-center justify-center px-6 text-center">
+        <div class="inline-flex items-center space-x-2 px-4 py-1.5 mb-10 bg-white border border-slate-100 rounded-full shadow-sm">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+            </span>
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nexus Project v22.3</span>
         </div>
         
-        <h1 class="hero-text text-6xl md:text-8xl font-extrabold text-slate-900 mb-8">
-            視点が重なるとき、<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500">臨床は変わる。</span>
+        <h1 class="hero-title text-7xl md:text-9xl font-extrabold mb-10">
+            視点が重なるとき、<br>臨床は変わる。
         </h1>
         
-        <p class="text-lg md:text-xl text-slate-500 font-light mb-16 leading-relaxed max-w-2xl">
-            理学療法と看護の知能を統合。16万件のエビデンスから、<br class="hidden md:block">
-            チーム医療の「根拠」を1秒で。
+        <p class="text-xl md:text-2xl text-slate-400 font-light mb-16 leading-relaxed max-w-3xl">
+            理学療法と看護の知能を統合。<br class="hidden md:block">
+            16万件のエビデンスから、チーム医療の根拠を1秒で。
         </p>
 
-        <div class="w-full max-w-2xl premium-card p-2 mb-12">
+        <div class="w-full max-w-3xl search-card rounded-[2.5rem] p-2">
             <form action="/search" method="GET" class="flex items-center">
-                <input type="text" name="q" placeholder="心不全 離床 基準..." 
-                       class="flex-grow bg-transparent px-6 py-5 text-lg focus:outline-none placeholder-slate-300">
-                <button type="submit" class="mr-2 px-8 py-4 bg-sky-500 text-white rounded-[1.8rem] font-bold hover:bg-sky-600 transition shadow-md shadow-sky-100">
-                    ANALYZE
+                <input type="text" name="q" placeholder="疾患、手技、論文タイトルを解析..." 
+                       class="flex-grow bg-transparent px-8 py-6 text-xl focus:outline-none placeholder-slate-300">
+                <button type="submit" class="btn-premium px-10 py-5 text-white rounded-[2rem] font-extrabold tracking-widest uppercase text-sm">
+                    Analyze
                 </button>
             </form>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-3">
-            <span class="w-full text-[10px] text-slate-400 uppercase tracking-widest mb-2 font-bold">Trending Intelligence</span>
-            <button onclick="location.href='/search?q=心不全リハ'" class="px-5 py-2 bg-white border border-slate-100 rounded-full text-xs text-slate-400 hover:text-sky-500 hover:border-sky-200 transition shadow-sm">心不全リハ</button>
-            <button onclick="location.href='/search?q=夜間せん妄'" class="px-5 py-2 bg-white border border-slate-100 rounded-full text-xs text-slate-400 hover:text-sky-500 hover:border-sky-200 transition shadow-sm">夜間せん妄</button>
-            <button onclick="location.href='/search?q=BPSD対応'" class="px-5 py-2 bg-white border border-slate-100 rounded-full text-xs text-slate-400 hover:text-sky-500 hover:border-sky-200 transition shadow-sm">BPSD対応</button>
+        <div class="mt-12 flex flex-wrap justify-center gap-3">
+            <button onclick="location.href='/search?q=心不全リハ'" class="px-6 py-2.5 bg-white border border-slate-200 rounded-full text-[11px] font-bold text-slate-400 hover:border-sky-300 hover:text-sky-500 transition shadow-sm uppercase tracking-wider">心不全リハ</button>
+            <button onclick="location.href='/search?q=夜間せん妄'" class="px-6 py-2.5 bg-white border border-slate-200 rounded-full text-[11px] font-bold text-slate-400 hover:border-sky-300 hover:text-sky-500 transition shadow-sm uppercase tracking-wider">夜間せん妄</button>
+            <button onclick="location.href='/search?q=BPSD対応'" class="px-6 py-2.5 bg-white border border-slate-200 rounded-full text-[11px] font-bold text-slate-400 hover:border-sky-300 hover:text-sky-500 transition shadow-sm uppercase tracking-wider">BPSD対応</button>
         </div>
     </main>
 
-    <footer class="mt-auto py-12 text-[10px] text-slate-300 tracking-widest font-bold uppercase">
-        &copy; 2026 K-BRAIN NEXUS PROJECT | MEDICAL INTELLIGENCE
+    <footer class="py-12 text-center">
+        <div class="text-[10px] text-slate-300 tracking-[0.4em] font-bold uppercase">
+            &copy; 2026 K-BRAIN NEXUS PROJECT | MEDICAL INTELLIGENCE ARCHIVE
+        </div>
     </footer>
 </body>
 </html>
@@ -134,16 +171,14 @@ def search():
         cur.close()
         conn.close()
 
-        # 結果画面もReaddy AI風に
         results_html = f'''
-        <body style="background:#f8fafc; color:#0f172a; font-family:sans-serif; padding:40px;">
-            <div style="max-width:800px; margin:0 auto;">
-                <header style="margin-bottom:40px;">
-                    <a href="/" style="text-decoration:none; color:#64748b; font-size:12px; font-weight:bold; letter-spacing:0.1em; text-transform:uppercase;">← Back to Home</a>
-                    <h2 style="font-size:32px; font-weight:800; margin-top:16px;">Search Results for <span style="color:#0ea5e9;">"{query}"</span></h2>
-                    <p style="color:#94a3b8; font-size:14px;">{len(rows)} cases identified in clinical database.</p>
+        <body style="background:#fcfcfd; color:#101828; font-family:sans-serif; padding:60px 20px;">
+            <div style="max-width:900px; margin:0 auto;">
+                <header style="margin-bottom:60px; text-align:center;">
+                    <a href="/" style="text-decoration:none; color:#98a2b3; font-size:11px; font-weight:bold; letter-spacing:0.2em; text-transform:uppercase;">← Back to Command</a>
+                    <h2 style="font-size:48px; font-weight:800; margin-top:24px; letter-spacing:-0.02em;">Search Results for "{query}"</h2>
                 </header>
-                {"".join([f'<div style="background:white; padding:32px; border-radius:24px; margin-bottom:24px; border:1px solid #f1f5f9; box-shadow:0 10px 15px -3px rgba(0,0,0,0.02);"> <strong style="display:block; font-size:18px; line-height:1.4; margin-bottom:12px;">{r[0]}</strong> <p style="font-size:14px; color:#475569; line-height:1.6; margin-bottom:20px;">{r[1] or "詳細データは外部リンクを確認してください。"}</p> <a href="{r[2]}" target="_blank" style="display:inline-block; color:#0ea5e9; font-size:12px; font-weight:bold; text-decoration:none; border-bottom:2px solid #e0f2fe;">[文献エビデンスを開く]</a> </div>' for r in rows])}
+                {"".join([f'<div style="background:white; padding:40px; border-radius:32px; margin-bottom:32px; border:1px solid #f2f4f7; box-shadow:0 10px 30px rgba(0,0,0,0.02);"> <strong style="display:block; font-size:22px; line-height:1.4; margin-bottom:16px; color:#101828;">{r[0]}</strong> <p style="font-size:16px; color:#475467; line-height:1.7; margin-bottom:24px;">{r[1] or "詳細データは外部リンクを確認してください。"}</p> <a href="{r[2]}" target="_blank" style="display:inline-block; padding:12px 24px; background:#f9fafb; color:#0ea5e9; font-size:12px; font-weight:bold; text-decoration:none; border-radius:12px;">OPEN EVIDENCE →</a> </div>' for r in rows])}
             </div>
         </body>
         '''
