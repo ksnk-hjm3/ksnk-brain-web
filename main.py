@@ -10,8 +10,7 @@ DATABASE_URL = "postgresql://hajime:0jsveDiLjj4VMsiqqKTYJaJFHmCC1PJr@dpg-d79ou6q
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
-# --- [デザイン：Minimal Medical Grace] ---
-# 提供された画像のミニマルで清潔なテイスト（白背景、水色十字、黒植物）を全面的に採用
+# --- [デザイン：基の絵を完全に中心へ据えた、静寂と知性のデザイン] ---
 INDEX_HTML = """
 <!DOCTYPE html>
 <html lang="ja">
@@ -19,116 +18,134 @@ INDEX_HTML = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6734545930167078" crossorigin="anonymous"></script>
-    <title>K-Brain | 統合知能アーカイブ</title>
+    <title>K-Brain | 臨床知能アーカイブ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+JP:wght@300;500;700&display=swap');
         
         body { 
             font-family: 'Inter', 'Noto Sans JP', sans-serif; 
-            background-color: #ffffff; 
-            color: #101828;
+            background-color: #fafafa; /* わずかに温かみのある白（紙の質感に近い） */
+            color: #1a1a1a;
             overflow-x: hidden;
         }
 
+        /* 💡 先生の「基の絵」を再現した背景ロゴ */
+        .art-background {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 550px;
+            z-index: -1;
+            opacity: 0.15; /* ちょうど良い「透かし」具合 */
+            filter: blur(0.5px);
+        }
+
         .hero-title {
-            letter-spacing: -0.04em;
-            line-height: 1.05;
-            background: linear-gradient(180deg, #101828 0%, #475467 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.06em;
+            line-height: 1.1;
+            font-weight: 800;
+            color: #1a1a1a;
         }
 
-        /* 💡 検索窓：丸みとアクセントカラー（水色） */
-        .search-card {
-            background: #ffffff;
-            border: 1px solid #e4e7ec;
-            border-radius: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* 🎨 Readdy風：浮遊する超ミニマルな検索バー */
+        .search-pill {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+            border-radius: 9999px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .search-card:focus-within {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(163, 207, 234, 0.8); /* 医療十字の水色 */
+        .search-pill:focus-within {
+            transform: translateY(-4px);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1);
+            border-color: #B9D4DB;
         }
 
-        .btn-premium {
-            background: #a3cfea; /* 医療十字の水色 */
-            color: #101828;
-            transition: all 0.2s ease;
+        .btn-analyze {
+            background-color: #A3C9D6; /* 十字架のあの水色 */
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(163, 201, 214, 0.3);
         }
 
-        .btn-premium:hover {
-            background: #ffffff;
-            color: #a3cfea;
-            border: 1px solid #a3cfea;
-            box-shadow: 0 4px 10px rgba(163, 207, 234, 0.4);
+        .btn-analyze:hover {
+            background-color: #8bb6c5;
+            transform: scale(1.02);
+        }
+
+        .nav-link {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: #a0a0a0;
+            text-transform: uppercase;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col items-center">
 
-    <div class="fixed inset-0 flex items-center justify-center z-[-1]">
-        <svg class="w-[80vw] h-[80vh] opacity-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M35 15C35 12.2386 37.2386 10 40 10H60C62.7614 10 65 12.2386 65 15V35H85C87.7614 35 90 37.2386 90 40V60C90 62.7614 87.7614 65 85 65H65V85C65 87.7614 62.7614 90 60 90H40C37.2386 90 35 87.7614 35 85V65H15C12.2386 65 10 62.7614 10 60V40C10 37.2386 12.2386 35 15 35H35V15Z" fill="#a3cfea" fill-opacity="0.8"/>
-            <path d="M50 85C50 70 51.5 55 53 40" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M51 60C53 58 55 56 57 54C58.3 52.7 59 51 59 49" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M52 50C54 48 56 46 58 44C59.3 42.7 60 41 60 39" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M53 40C55 38 57 36 59 34C60.3 32.7 61 31 61 29" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M49 60C47 62 45 64 43 66C41.7 67.3 41 69 41 71" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M48 50C46 52 44 54 42 56C40.7 57.3 40 59 40 61" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M47 40C45 42 43 44 41 46C39.7 47.3 39 49 39 51" stroke="black" stroke-width="1.5" stroke-linecap="round"/>
+    <div class="art-background">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="38" y="10" width="24" height="80" rx="12" fill="#A3C9D6" />
+            <rect x="10" y="38" width="80" height="24" rx="12" fill="#A3C9D6" />
+            <path d="M50 85 C50 70 52 50 58 30" stroke="#1a1a1a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M53 65 C58 60 65 55 68 45" stroke="#1a1a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <path d="M54 50 C60 45 68 40 70 30" stroke="#1a1a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <path d="M48 60 C42 62 35 68 32 75" stroke="#1a1a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <path d="M47 45 C40 48 32 55 30 65" stroke="#1a1a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <circle cx="68" cy="45" r="1.5" fill="#1a1a1a"/>
+            <circle cx="70" cy="30" r="1.5" fill="#1a1a1a"/>
+            <circle cx="32" cy="75" r="1.5" fill="#1a1a1a"/>
+            <circle cx="30" cy="65" r="1.5" fill="#1a1a1a"/>
         </svg>
     </div>
 
-    <nav class="w-full max-w-7xl mx-auto px-8 py-10 flex justify-between items-center z-50">
-        <div class="text-3xl font-extrabold italic tracking-tighter text-slate-900">K-Brain</div>
-        <div class="flex items-center space-x-8">
-            <a href="https://www.instagram.com/ksnk.hjm3/" target="_blank" class="text-[11px] font-bold text-slate-400 hover:text-sky-500 uppercase tracking-[0.2em] transition">Instagram</a>
-            <a href="https://ksnk-brain.jp" class="px-7 py-3 bg-slate-900 text-white text-[11px] font-bold rounded-full hover:bg-sky-600 transition tracking-widest uppercase">Launch Engine</a>
+    <header class="w-full max-w-7xl px-10 py-12 flex justify-between items-center z-50">
+        <div class="text-3xl font-extrabold italic tracking-tighter">K-Brain</div>
+        <div class="flex items-center space-x-10">
+            <a href="https://www.instagram.com/ksnk.hjm3/" target="_blank" class="nav-link hover:text-slate-900 transition">Instagram</a>
+            <a href="https://ksnk-brain.jp" class="px-8 py-3 bg-slate-900 text-white text-[10px] font-bold rounded-full tracking-widest uppercase hover:bg-sky-600 transition">Launch System</a>
         </div>
-    </nav>
+    </header>
 
-    <main class="flex-grow flex flex-col items-center justify-center px-6 text-center">
-        <div class="inline-flex items-center space-x-2 px-4 py-1.5 mb-10 bg-white border border-slate-100 rounded-full shadow-sm">
-            <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
-            </span>
-            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nexus Project v22.3</span>
+    <main class="flex-grow flex flex-col items-center justify-center px-6 text-center w-full">
+        <div class="mb-6 py-1 px-4 border border-slate-200 rounded-full inline-block">
+            <span class="text-[9px] font-bold text-slate-400 tracking-[0.3em] uppercase">Clinical Intelligence Nexus</span>
         </div>
         
-        <h1 class="hero-title text-7xl md:text-9xl font-extrabold mb-10">
+        <h1 class="hero-title text-6xl md:text-8xl mb-10">
             視点が重なるとき、<br>臨床は変わる。
         </h1>
         
-        <p class="text-xl md:text-2xl text-slate-400 font-light mb-16 leading-relaxed max-w-3xl">
-            理学療法と看護の知能を統合。<br class="hidden md:block">
+        <p class="text-lg md:text-xl text-slate-400 font-light mb-16 max-w-2xl leading-relaxed">
+            理学療法と看護の知能を統合。<br>
             16万件のエビデンスから、チーム医療の根拠を1秒で。
         </p>
 
-        <div class="w-full max-w-3xl search-card p-2">
+        <div class="w-full max-w-3xl search-pill p-2">
             <form action="/search" method="GET" class="flex items-center">
-                <input type="text" name="q" placeholder="疾患、手技、論文タイトルを解析..." 
-                       class="flex-grow bg-transparent px-8 py-6 text-xl focus:outline-none placeholder-slate-300">
-                <button type="submit" class="btn-premium px-10 py-5 text-white rounded-[1.8rem] font-extrabold tracking-widest uppercase text-sm">
+                <input type="text" name="q" placeholder="キーワードを解析..." 
+                       class="flex-grow bg-transparent px-8 py-5 text-xl focus:outline-none placeholder-slate-200">
+                <button type="submit" class="btn-analyze px-12 py-5 rounded-full font-extrabold tracking-widest uppercase text-sm">
                     Analyze
                 </button>
             </form>
         </div>
 
-        <div class="mt-12 flex flex-wrap justify-center gap-3">
-            <button onclick="location.href='/search?q=心不全リハ'" class="px-6 py-2.5 bg-white border border-slate-200 rounded-full text-[11px] font-bold text-slate-400 hover:border-sky-300 hover:text-sky-500 transition shadow-sm uppercase tracking-wider">心不全リハ</button>
-            <button onclick="location.href='/search?q=夜間せん妄'" class="px-6 py-2.5 bg-white border border-slate-200 rounded-full text-[11px] font-bold text-slate-400 hover:border-sky-300 hover:text-sky-500 transition shadow-sm uppercase tracking-wider">夜間せん妄</button>
-            <button onclick="location.href='/search?q=BPSD対応'" class="px-6 py-2.5 bg-white border border-slate-200 rounded-full text-[11px] font-bold text-slate-400 hover:border-sky-300 hover:text-sky-500 transition shadow-sm uppercase tracking-wider">BPSD対応</button>
+        <div class="mt-12 flex space-x-4">
+            <button onclick="location.href='/search?q=心不全リハ'" class="text-[10px] font-bold text-slate-300 hover:text-sky-400 transition tracking-widest uppercase">#HeartFailure</button>
+            <button onclick="location.href='/search?q=夜間せん妄'" class="text-[10px] font-bold text-slate-300 hover:text-sky-400 transition tracking-widest uppercase">#Delirium</button>
         </div>
     </main>
 
-    <footer class="py-12 text-center">
-        <div class="text-[10px] text-slate-300 tracking-[0.4em] font-bold uppercase">
-            &copy; 2026 K-BRAIN NEXUS PROJECT | MEDICAL INTELLIGENCE ARCHIVE
+    <footer class="py-12">
+        <div class="text-[9px] text-slate-300 tracking-[0.5em] font-bold uppercase">
+            &copy; 2026 K-BRAIN NEXUS PROJECT | EVIDENCE BASED MEDICINE
         </div>
     </footer>
 </body>
@@ -153,16 +170,14 @@ def search():
         cur.close()
         conn.close()
 
-        # 結果画面もミニマルなテイストに
         results_html = f'''
-        <body style="background:#ffffff; color:#101828; font-family:sans-serif; padding:60px 20px;">
+        <body style="background:#fafafa; color:#1a1a1a; font-family:sans-serif; padding:60px 20px;">
             <div style="max-width:900px; margin:0 auto;">
                 <header style="margin-bottom:60px; text-align:center;">
-                    <a href="/" style="text-decoration:none; color:#98a2b3; font-size:11px; font-weight:bold; letter-spacing:0.2em; text-transform:uppercase;">← Back to Command</a>
-                    <h2 style="font-size:48px; font-weight:800; margin-top:24px; letter-spacing:-0.02em;">Search Results for "{query}"</h2>
-                    <p style="color:#98a2b3; font-size:14px; font-weight:400; text-transform:uppercase; letter-spacing:0.1em; margin-top:8px;">16萬件の知能アーカイブから抽出</p>
+                    <a href="/" style="text-decoration:none; color:#d1d1d1; font-size:10px; font-weight:bold; letter-spacing:0.3em; text-transform:uppercase;">← Command Center</a>
+                    <h2 style="font-size:42px; font-weight:800; margin-top:24px; letter-spacing:-0.03em;">Search: {query}</h2>
                 </header>
-                {"".join([f'<div style="background:white; padding:40px; border-radius:32px; margin-bottom:32px; border:1px solid #f2f4f7; box-shadow:0 10px 30px rgba(0,0,0,0.02);"> <strong style="display:block; font-size:22px; line-height:1.4; margin-bottom:16px; color:#101828;">{r[0]}</strong> <p style="font-size:16px; color:#475467; line-height:1.7; margin-bottom:24px;">{r[1] or "詳細データは外部リンクを確認してください。"}</p> <a href="{r[2]}" target="_blank" style="display:inline-block; padding:12px 24px; background:#f9fafb; color:#0ea5e9; font-size:12px; font-weight:bold; text-decoration:none; border-radius:12px;">OPEN EVIDENCE →</a> </div>' for r in rows])}
+                {"".join([f'<div style="background:white; padding:40px; border-radius:40px; margin-bottom:32px; box-shadow:0 20px 40px rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.02);"> <strong style="display:block; font-size:22px; line-height:1.4; margin-bottom:16px;">{r[0]}</strong> <p style="font-size:16px; color:#777; line-height:1.8; margin-bottom:24px;">{r[1] or "詳細データは外部リンクを確認してください。"}</p> <a href="{r[2]}" target="_blank" style="display:inline-block; padding:12px 28px; background:#A3C9D6; color:white; font-size:11px; font-weight:bold; text-decoration:none; border-radius:99px; letter-spacing:0.1em;">GET EVIDENCE</a> </div>' for r in rows])}
             </div>
         </body>
         '''
