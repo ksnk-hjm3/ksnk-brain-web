@@ -1,153 +1,107 @@
-import os, psycopg2
+import os
+import psycopg2
 from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 
-# --- 🚀 設定エリア ---
-DATABASE_URL = "postgresql://hajime:0jsveDiLjj4VMsiqqKTYJaJFHmCC1PJr@dpg-d79ou6qdbo4c73afvnng-a.singapore-postgres.render.com/ksnk_brain"
-ADMIN_NAME = "クスノキ"
-INSTA_URL = "https://www.instagram.com/ksnk.hjm3/"
+# --- [設定エリア] ---
+# スクリーンショットから取得した先生のDB接続情報
+DATABASE_URL = "postgresql://hajime:0jsveDiLjj4VMsiqqKTYJaJFHmCC1PJr@dpg-d79ou6qdbo4c73afvnng-a.singapore-postgres.render.com/k_brain_v22_3"
 
-ADSENSE_HEAD_CODE = """
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6734545930167078"
-     crossorigin="anonymous"></script>
-"""
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL)
 
-def format_count(n):
-    return "{:,}".format(n)
-
-def get_db_count():
-    try:
-        conn = psycopg2.connect(DATABASE_URL)
-        cur = conn.cursor()
-        cur.execute("SELECT COUNT(*) FROM vault")
-        count = cur.fetchone()[0]
-        conn.close()
-        return format_count(count)
-    except:
-        return "168,247"
-
-HTML_LAYOUT = f"""
+# --- [デザイン：統合知能・道標付き] ---
+INDEX_HTML = """
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K-Brain | Evidence Command Center</title>
-    {ADSENSE_HEAD_CODE}
+    <title>K-Brain | リハと看護を繋ぐ臨床知能</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono&display=swap');
-        :root {{ --bg: #030712; --panel: rgba(17, 24, 39, 0.7); --accent: #38bdf8; --text-main: #f8fafc; --text-sub: #94a3b8; --border: rgba(255, 255, 255, 0.1); }}
-        body {{ font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--text-main); background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 40px 40px; min-height: 100vh; }}
-        .top-nav {{ border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; }}
-        .system-status {{ display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.7em; color: var(--accent); }}
-        .status-dot {{ width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent); animation: pulse 2s infinite; }}
-        @keyframes pulse {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0.3; }} 100% {{ opacity: 1; }} }}
-        .container {{ max-width: 1000px; margin: 0 auto; padding: 60px 20px; }}
-        .hero {{ text-align: center; margin-bottom: 80px; }}
-        h1 {{ font-size: 4.5em; font-weight: 800; letter-spacing: -0.06em; margin: 0; background: linear-gradient(to bottom, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }}
-        .tagline {{ font-size: 1.1em; color: var(--accent); font-weight: 400; letter-spacing: 0.4em; margin-top: 5px; text-transform: uppercase; }}
-        .search-console {{ background: var(--panel); border: 1px solid var(--border); border-radius: 32px; padding: 12px; display: flex; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); margin: 40px 0; }}
-        .search-input {{ flex: 1; border: none; background: transparent; padding: 20px 30px; font-size: 1.2em; color: white; outline: none; }}
-        .analyze-btn {{ background: var(--accent); color: #000; border: none; border-radius: 24px; padding: 0 45px; font-weight: 800; cursor: pointer; transition: 0.3s; }}
-        .analyze-btn:hover {{ transform: scale(1.02); box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }}
-        .metrics {{ display: flex; justify-content: center; gap: 60px; margin-top: 30px; font-family: 'JetBrains Mono', monospace; }}
-        .metric-item {{ text-align: left; }}
-        .metric-label {{ display: block; font-size: 0.65em; color: var(--text-sub); text-transform: uppercase; }}
-        .metric-value {{ font-size: 1.2em; font-weight: 600; color: #fff; }}
-        
-        /* 検索結果カードの強化 */
-        .article-link {{ text-decoration: none; color: inherit; display: block; }}
-        .article-card {{ background: var(--panel); border: 1px solid var(--border); padding: 40px; border-radius: 24px; margin-bottom: 30px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }}
-        .article-card:hover {{ background: rgba(255, 255, 255, 0.05); border-color: var(--accent); transform: translateY(-4px); }}
-        .article-title {{ font-size: 1.5em; font-weight: 700; color: #fff; margin-bottom: 15px; display: block; line-height: 1.4; }}
-        .article-text {{ font-size: 1.05em; color: var(--text-sub); line-height: 1.9; }}
-        .article-meta {{ margin-top: 20px; font-size: 0.75em; color: var(--accent); font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 8px; }}
-
-        footer {{ text-align: center; padding: 100px 0; opacity: 0.5; font-size: 0.8em; }}
-        footer a {{ color: #fff; text-decoration: none; margin: 0 15px; }}
-        @media (max-width: 600px) {{ h1 {{ font-size: 3em; }} .search-console {{ flex-direction: column; }} .analyze-btn {{ padding: 18px; margin-top: 10px; }} .metrics {{ gap: 20px; flex-direction: column; align-items: center; }} }}
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+        body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background-color: #020617; color: #f8fafc; background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 40px 40px; }
+        .glass-card { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.5); box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); }
+        .neon-glow { text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+        .search-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+        .tag-btn { transition: all 0.2s ease; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(71, 85, 105, 0.5); cursor: pointer; color: #94a3b8; }
+        .tag-btn:hover { background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8; transform: translateY(-1px); }
     </style>
 </head>
-<body>
-    <div class="top-nav">
-        <div style="font-weight:800; font-size:1.2em; letter-spacing:-0.05em;">K-Brain</div>
-        <div class="system-status"><div class="status-dot"></div><span>ANALYZER ONLINE / NEXUS_LINK: ACTIVE</span></div>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="fixed top-6 right-6 flex items-center space-x-4 text-[10px] tracking-widest text-slate-500 uppercase">
+        <div class="flex items-center"><span class="w-2 h-2 bg-sky-500 rounded-full animate-pulse mr-2"></span>Analyzer Online</div>
+        <div class="border-l border-slate-800 pl-4">Total Intelligence: 168,367</div>
     </div>
-    <div class="container">
-        <div class="hero">
-            <p class="tagline">思考停止を解除する</p>
-            <h1>K-Brain</h1>
-            <div class="metrics">
-                <div class="metric-item"><span class="metric-label">Total Evidence</span><span class="metric-value">{{{{ total_count }}}}</span></div>
-                <div class="metric-item"><span class="metric-label">Access Mode</span><span class="metric-value">DIRECT_LINK</span></div>
-                <div class="metric-item"><span class="metric-label">Status</span><span class="metric-value">PRODUCTION</span></div>
+
+    <main class="w-full max-w-3xl text-center space-y-12">
+        <header class="space-y-4">
+            <h1 class="text-6xl font-bold tracking-tighter neon-glow italic">K-Brain</h1>
+            <div class="space-y-2">
+                <p class="text-xl md:text-2xl font-light text-slate-200">視点が重なるとき、臨床は変わる。</p>
+                <p class="text-sm md:text-base text-slate-400 font-light tracking-wide">
+                    リハビリテーションと看護の知能を統合。<br>16万件のエビデンスから、チーム医療の「根拠」を1秒で。
+                </p>
             </div>
-            <form action="/" method="GET" class="search-console">
-                <input type="text" name="q" class="search-input" placeholder="疾患名、手技、論文タイトルを解析..." value="{{{{ query }}}}">
-                <button type="submit" class="analyze-btn">ANALYZE</button>
+        </header>
+
+        <section class="space-y-6">
+            <form action="/search" method="GET" class="relative">
+                <input type="text" name="q" placeholder="「心不全 離床 基準」「がんリハ 浮腫」「夜間せん妄」などで検索..." class="search-input w-full p-5 bg-slate-900/80 rounded-xl glass-card text-lg font-light text-slate-100 transition-all">
+                <button type="submit" class="absolute right-4 top-4 text-sky-500 hover:text-sky-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </button>
             </form>
-        </div>
-        <div class="content">
-            {{% if data %}}
-                {{% for row in data %}}
-                <a href="{{{{ row[2] }}}}" target="_blank" class="article-link">
-                    <div class="article-card">
-                        <span class="article-title">{{{{ row[0] }}}}</span>
-                        <div class="article-text">
-                            {{% if row[1] and row[1] != 'None' %}}
-                                {{{{ row[1][:400] }}}}...
-                            {{% else %}}
-                                <span style="opacity:0.5; font-style:italic;">要約データは外部データベースにのみ存在します。詳細を確認するにはクリックしてください。</span>
-                            {{% endif %}}
-                        </div>
-                        <div class="article-meta">
-                            <span>>> SOURCE_IDENTIFIED:</span>
-                            <span style="text-decoration: underline;">OPEN_EXTERNAL_EVIDENCE</span>
-                        </div>
-                    </div>
-                </a>
-                {{% endfor %}}
-            {{% elif query %}}
-                <div style="text-align:center; padding:100px; font-family:'JetBrains Mono'; color:var(--text-sub);"> > NO_DATA_FOUND_IN_NEXUS </div>
-            {{% endif %}}
-        </div>
-    </div>
-    <footer>
-        <a href="/about">ABOUT SYSTEM</a> | <a href="/privacy">PRIVACY</a> | <a href="{INSTA_URL}" target="_blank">INSTAGRAM</a>
-        <p style="margin-top:20px;">&copy; 2026 {ADMIN_NAME}. High-Fidelity Evidence Analysis Engine.</p>
-    </footer>
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="location.href='/search?q=心不全リハ'" class="tag-btn px-4 py-1.5 rounded-full text-xs">心不全リハ</button>
+                <button onclick="location.href='/search?q=夜間せん妄'" class="tag-btn px-4 py-1.5 rounded-full text-xs">夜間せん妄</button>
+                <button onclick="location.href='/search?q=BPSD対応'" class="tag-btn px-4 py-1.5 rounded-full text-xs">BPSD対応</button>
+                <button onclick="location.href='/search?q=フレイル予防'" class="tag-btn px-4 py-1.5 rounded-full text-xs">フレイル予防</button>
+                <button onclick="location.href='/search?q=嚥下訓練'" class="tag-btn px-4 py-1.5 rounded-full text-xs">嚥下訓練</button>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-slate-900">
+            <div class="space-y-1"><div class="text-sky-500 font-bold">Search</div><p class="text-[10px] text-slate-500">臨床の悩みをキーワード検索</p></div>
+            <div class="space-y-1"><div class="text-sky-500 font-bold">Analyze</div><p class="text-[10px] text-slate-500">リハと看護、双方の視点で抽出</p></div>
+            <div class="space-y-1"><div class="text-sky-500 font-bold">Connect</div><p class="text-[10px] text-slate-500">共通の根拠でチーム医療を強化</p></div>
+        </section>
+    </main>
 </body>
 </html>
 """
 
-@app.route("/")
+# --- [実行ロジック] ---
+
+@app.route('/')
 def index():
+    return render_template_string(INDEX_HTML)
+
+@app.route('/search')
+def search():
     query = request.args.get('q', '')
-    total_count = get_db_count()
-    data = []
-    if query:
-        try:
-            conn = psycopg2.connect(DATABASE_URL)
-            cur = conn.cursor()
-            # 3カラム(title, full_text, url)を取得するように修正
-            search_sql = "SELECT title, full_text, url FROM vault WHERE title ILIKE %s OR full_text ILIKE %s LIMIT 20"
-            cur.execute(search_sql, (f"%{query}%", f"%{query}%"))
-            data = cur.fetchall()
-            conn.close()
-        except: pass
-    return render_template_string(HTML_LAYOUT, data=data, query=query, total_count=total_count)
+    if not query:
+        return render_template_string(INDEX_HTML)
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    # タイトルまたは要約から検索（大文字小文字無視）
+    cur.execute("SELECT title, abstract, url, source FROM papers WHERE title ILIKE %s OR abstract ILIKE %s ORDER BY id DESC LIMIT 50", (f'%{query}%', f'%{query}%'))
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
 
-@app.route("/about")
-def about():
-    total_count = get_db_count()
-    return render_template_string(HTML_LAYOUT.replace('{% block content %}', '<div class="article-card"><h2>ABOUT SYSTEM</h2><p>理学療法士の現場に「根拠」と「閃き」を。16万件超のエビデンスが、あなたの臨床の思考停止を解除します。</p></div>').replace('{% endblock %}', ''), total_count=total_count)
+    # 簡易的な結果表示用HTML（ここはシンプルさを維持）
+    results_html = f"""
+    <body style="background:#020617; color:#f8fafc; font-family:sans-serif; padding:20px;">
+        <h2 style="color:#38bdf8;">「{query}」の解析結果 ({len(rows)}件)</h2>
+        <a href="/" style="color:#94a3b8; text-decoration:none;">← 検索に戻る</a><br><br>
+        {"".join([f'<div style="border-bottom:1px solid #1e293b; padding:15px 0;"><strong>{r[0]}</strong><p style="font-size:0.8em; color:#94a3b8;">{r[1] or "要約なし"}</p><a href="{r[2]}" target="_blank" style="color:#38bdf8; font-size:0.8em;">[文献元: {r[3]}]</a></div>' for r in rows])}
+    </body>
+    """
+    return results_html
 
-@app.route("/privacy")
-def privacy():
-    total_count = get_db_count()
-    return render_template_string(HTML_LAYOUT.replace('{% block content %}', f'<div class="article-card"><h2>PRIVACY POLICY</h2><p>当サイトではGoogleアドセンスを利用し、広告を配信しています。</p><p>運営者: {ADMIN_NAME}</p></div>').replace('{% endblock %}', ''), total_count=total_count)
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    app.run(debug=True, port=int(os.environ.get('PORT', 5000)))
