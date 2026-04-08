@@ -5,7 +5,6 @@ from flask import Flask, request, render_template_string
 app = Flask(__name__)
 
 # --- [設定エリア] ---
-# スクリーンショットから取得した先生専用のDB接続情報
 DATABASE_URL = "postgresql://hajime:0jsveDiLjj4VMsiqqKTYJaJFHmCC1PJr@dpg-d79ou6qdbo4c73afvnng-a.singapore-postgres.render.com/k_brain_v22_3"
 
 def get_db_connection():
@@ -39,42 +38,19 @@ INDEX_HTML = """
             <h1 class="text-3xl font-extrabold tracking-tighter text-slate-900 italic">K-Brain</h1>
             <nav class="flex items-center space-x-6 text-sm font-medium text-slate-700">
                 <a href="#vision" class="hover:text-sky-600 transition">Vision</a>
-                <a href="#features" class="hover:text-sky-600 transition">Features</a>
                 <a href="https://ksnk-brain.jp" class="px-5 py-2.5 bg-sky-600 text-white rounded-full text-xs font-bold hover:bg-sky-700 transition">検索エンジン</a>
             </nav>
         </div>
     </header>
 
-    <main class="flex-grow pt-32 p-6 md:p-12">
-        <section id="vision" class="max-w-7xl mx-auto text-center space-y-8 py-20">
+    <main class="flex-grow pt-32 p-6 md:p-12 text-center">
+        <section id="vision" class="max-w-7xl mx-auto space-y-8 py-20">
             <div class="inline-block px-4 py-1.5 bg-sky-100 text-sky-700 rounded-full text-xs font-bold uppercase">Clinical Intelligence</div>
             <h2 class="text-6xl md:text-7xl font-extrabold tracking-tighter text-slate-950 leading-tight">視点が重なるとき、<br>臨床は変わる。</h2>
-            <p class="max-w-2xl mx-auto text-lg md:text-xl font-light text-slate-600">
-                リハビリテーションと看護の専門知能を統合。<br>16万件のエビデンスから、チーム医療の根拠を1秒で。
-            </p>
-            <form action="/search" method="GET" class="max-w-2xl mx-auto relative">
+            <form action="/search" method="GET" class="max-w-2xl mx-auto relative mt-8">
                 <input type="text" name="q" placeholder="キーワードで検索..." class="w-full p-5 bg-white rounded-2xl glass-card text-lg focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
                 <button type="submit" class="absolute right-4 top-4 text-sky-600 font-bold">検索</button>
             </form>
-            <div class="flex flex-wrap justify-center gap-2 mt-4">
-                <button onclick="location.href='/search?q=心不全リハ'" class="px-4 py-2 bg-white border border-slate-200 rounded-full text-xs text-slate-500 hover:border-sky-500 transition">心不全リハ</button>
-                <button onclick="location.href='/search?q=夜間せん妄'" class="px-4 py-2 bg-white border border-slate-200 rounded-full text-xs text-slate-500 hover:border-sky-500 transition">夜間せん妄</button>
-            </div>
-        </section>
-
-        <section id="features" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 py-10 text-left">
-            <div class="glass-card p-8 rounded-3xl">
-                <h3 class="text-xl font-bold mb-2">Search</h3>
-                <p class="text-xs text-slate-500">16万件の論文データベースから、臨床の悩みを即座に特定します。</p>
-            </div>
-            <div class="glass-card p-8 rounded-3xl">
-                <h3 class="text-xl font-bold mb-2">Analyze</h3>
-                <p class="text-xs text-slate-500">リハと看護の双方の視点でAIが解析。チーム医療の共通言語へ。</p>
-            </div>
-            <div class="glass-card p-8 rounded-3xl">
-                <h3 class="text-xl font-bold mb-2">Connect</h3>
-                <p class="text-xs text-slate-500">根拠を現場へ持ち帰り、明日からの介入と多職種連携を支援します。</p>
-            </div>
         </section>
     </main>
 
@@ -117,4 +93,5 @@ def search():
         return f"Database Connection Error: {str(e)}"
 
 if __name__ == '__main__':
-    app.run(debug=True, port=int(os.environ.get('PORT', 5000)))
+    # host='0.0.0.0' を追加しました。これでRenderが通信できるようになります。
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
