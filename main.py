@@ -5,8 +5,8 @@ from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 
-# ⚠️ 「魔法の住所」を直接注入
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://hajime:0jsveDiLjj4VMsiqqKTYJaJFHmCC1PJr@dpg-d79ou6qdbo4c73afvnng-a.singapore-postgres.render.com/ksnk_db")
+# ⚠️ 本物のURLを注入
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://hajime:0jsveDiLjj4VMsiqqKTYJaJFHmCC1PJr@dpg-d79ou6qdbo4c73afvnng-a.singapore-postgres.render.com/ksnk_brain")
 
 pool = None
 try:
