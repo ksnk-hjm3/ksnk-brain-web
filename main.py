@@ -5,8 +5,8 @@ from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 
-# ⚠️ ここにも、同じ「External Database URL」を貼り付けてください
-DATABASE_URL = os.environ.get("DATABASE_URL", "ここにコピーしたURLを貼り付け")
+# ⚠️ 「魔法の住所」を直接注入
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://hajime:0jsveDiLjj4VMsiqqKTYJaJFHmCC1PJr@dpg-d79ou6qdbo4c73afvnng-a.singapore-postgres.render.com/ksnk_db")
 
 pool = None
 try:
@@ -40,8 +40,8 @@ INDEX_HTML = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&family=Noto+Sans+JP:wght@100;400;700;900&display=swap');
         body { font-family: 'Inter', 'Noto Sans JP', sans-serif; background-color: #fafafa; }
-        .art-bg { position: fixed; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 550px; z-index: -1; opacity: 0.95; }
-        .metric-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); padding: 3rem; border-radius: 40px; border: 1px solid rgba(0,0,0,0.02); box-shadow: 0 20px 40px rgba(0,0,0,0.02); }
+        .art-bg { position: fixed; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 95%; max-width: 530px; z-index: -1; opacity: 0.95; }
+        .metric-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); padding: 3rem; border-radius: 40px; border: 1px solid rgba(0,0,0,0.02); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -51,16 +51,17 @@ INDEX_HTML = """
             <path d="M50 88 C49 70 51 52 58 35" stroke="#1a1a1a" stroke-width="1.3" fill="none" stroke-linecap="round" />
             <path d="M54 65 C60 62 67 58 70 48" stroke="#1a1a1a" stroke-width="0.9" fill="none" stroke-linecap="round" />
             <path d="M46 68 C40 70 34 78 32 86" stroke="#1a1a1a" stroke-width="0.9" fill="none" stroke-linecap="round" />
-            <circle cx="70" cy="48" r="1.5" fill="#1a1a1a"/><circle cx="32" cy="86" r="1.5" fill="#1a1a1a"/>
+            <path d="M70 48 Q72 46 71.5 49.5 Q71 53 69 48.5 Z" fill="#1a1a1a"/>
+            <path d="M32 86 Q30 88 30.5 84.5 Q31 81 33 85.5 Z" fill="#1a1a1a"/>
         </svg>
     </div>
-    <header class="w-full max-w-6xl px-8 py-10 flex justify-between items-center"><div class="text-3xl font-black italic">K-Brain</div></header>
-    <main class="w-full max-w-2xl text-center">
+    <header class="w-full max-w-6xl px-8 py-10 flex justify-between items-center z-50"><div class="text-3xl font-black italic">K-Brain</div></header>
+    <main class="flex-grow w-full px-6 flex flex-col items-center text-center">
         <h1 class="text-6xl font-black mb-16">臨床を、数字で語る。</h1>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-32">
             <div class="metric-card"><div class="text-5xl font-black mb-4">{{ count }}</div><div class="text-xs font-bold text-sky-600 uppercase tracking-widest">Total Archive</div></div>
-            <div class="metric-card"><div class="text-5xl font-black mb-4 italic">1,395</div><div class="text-xs font-bold text-sky-600 uppercase tracking-widest">Daily Growth</div></div>
-            <div class="metric-card"><div class="text-5xl font-black mb-4">0.8s</div><div class="text-xs font-bold text-sky-600 uppercase tracking-widest">Logic Speed</div></div>
+            <div class="metric-card"><div class="text-5xl font-black mb-4 italic">1,393</div><div class="text-xs font-bold text-sky-600 uppercase tracking-widest">Growth Factor</div></div>
+            <div class="metric-card"><div class="text-5xl font-black mb-4">0.8s</div><div class="text-xs font-bold text-sky-600 uppercase tracking-widest">Logic Latency</div></div>
         </div>
         <form action="/search" class="bg-white rounded-full shadow-2xl flex p-2"><input name="q" class="flex-grow pl-6 outline-none text-lg" placeholder="臨床課題を解析..."><button class="bg-[#A3C9D6] text-white px-10 py-4 rounded-full font-bold">検索</button></form>
     </main>
@@ -77,6 +78,6 @@ def search():
     if not q: return index()
     rows = query_db("SELECT title, abstract, url FROM papers WHERE title ILIKE %s OR abstract ILIKE %s LIMIT 50", (f'%{q}%', f'%{q}%'))
     results = "".join([f'<div style="background:white; padding:40px; border-radius:30px; margin-bottom:20px; box-shadow:0 10px 30px rgba(0,0,0,0.02); text-align:left;"><b>{r[0]}</b><p>{r[1]}</p><a href="{r[2]}" target="_blank" style="color:#A3C9D6; font-weight:bold;">VIEW EVIDENCE →</a></div>' for r in rows])
-    return f'<body style="background:#fafafa; padding:40px; font-family:sans-serif;"><div style="max-width:800px; margin:0 auto;"><a href="/" style="color:#ccc; text-decoration:none; font-size:12px;">← BACK</a><h2 style="margin-top:20px;">Result: {q}</h2>{results}</div></body>'
+    return f'<body style="background:#fafafa; padding:40px; font-family:sans-serif;"><div style="max-width:800px; margin:0 auto;"><a href="/" style="color:#ccc; text-decoration:none; font-size:12px;">← BACK</a><h2 style="margin-top:20px; font-weight:900;">Result: {q}</h2>{results}</div></body>'
 
 if __name__ == '__main__': app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
